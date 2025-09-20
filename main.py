@@ -68,6 +68,16 @@ def render_site():
 def main():
     render_site()
 
+    print("Site generated successfully.")
+    print("contents for ./public:")
+    for root, dirs, files in os.walk(OUT_DIR):
+        level = root.replace(OUT_DIR, "").count(os.sep)
+        indent = " " * 4 * level
+        print(f"{indent}{os.path.basename(root)}/")
+        subindent = " " * 4 * (level + 1)
+        for f in files:
+            print(f"{subindent}{f}")
+
 
 if __name__ == "__main__":
     main()
