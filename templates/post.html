@@ -1,8 +1,17 @@
 {% extends "base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="/css/post.style.css">
+{% endblock %}
+
 {% block main_content %}
     <article>
-        <h2>{{ post.title }}</h2>
-        <p>Published: {{ post.date }}</p>
-        {{ post.html_content | safe }}
+        <div class="post-header">
+            <span class="post-date">{{ post.date }}</span>
+            <h2 class="post-title">{{ post.title }}</h2>
+        </div>
+        <div class="post-content">
+            {{ post.html_content | safe }}
+        </div>
     </article>
 {% endblock %}

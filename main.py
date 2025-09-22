@@ -7,6 +7,7 @@ import pyromark
 
 OUT_DIR = "./public"
 TEMPLATE_DIR = "./templates"
+STATIC_DIR = "./static"
 
 
 @dataclass
@@ -17,6 +18,7 @@ class Post:
     slug: str
     content: str
     html_content: str = ""
+    excerpt: str = ""
 
 
 def load_post(filepath: str) -> Post:
@@ -25,15 +27,27 @@ def load_post(filepath: str) -> Post:
         date_str = post_date.strftime("%Y/%m/%d")
         return f"posts/{date_str}/{filename}"
 
+    def generate_date_string(date: datetime | None) -> str:
+        FORMAT = "%b %d, %Y %I.%M %p"
+        if date is None:
+            return datetime.now().strftime(FORMAT)
+        try:
+            return date.strftime(FORMAT)
+        except ValueError:
+            return datetime.now().strftime(FORMAT)
+
     with open(filepath, "r") as f:
         post_data = frontmatter.load(f)
 
     title = post_data.get("title", "Untitled")
-    date = post_data.get("date", datetime.now())
-    slug = generate_slug(filepath, date)
+    date = generate_date_string(post_data.get("date"))
+    slug = generate_slug(filepath, post_data.get("date", datetime.now()))
     tags = post_data.get("tags", [])
     content = post_data.content
     html_content = pyromark.html(content)
+    excerpt = post_data.get(
+        "excerpt", content[:200] + "..." if len(content) > 200 else content
+    )
 
     return Post(
         title=title,
@@ -42,7 +56,22 @@ def load_post(filepath: str) -> Post:
         slug=slug,
         content=content,
         html_content=html_content,
+        excerpt=excerpt,
     )
+
+
+def copy_static_files():
+    if not os.path.exists(STATIC_DIR):
+        return
+    for root, _dirs, files in os.walk(STATIC_DIR):
+        for file in files:
+            src_path = os.path.join(root, file)
+            rel_path = os.path.relpath(src_path, STATIC_DIR)
+            dest_path = os.path.join(OUT_DIR, rel_path)
+            os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+            with open(src_path, "rb") as src_file:
+                with open(dest_path, "wb") as dest_file:
+                    dest_file.write(src_file.read())
 
 
 def render_site():
@@ -64,13 +93,15 @@ def render_site():
         with open(post_path, "w") as f:
             f.write(post_html)
 
+    copy_static_files()
+
 
 def main():
     render_site()
 
     print("Site generated successfully.")
     print("contents for ./public:")
-    for root, dirs, files in os.walk(OUT_DIR):
+    for root, _dirs, files in os.walk(OUT_DIR):
         level = root.replace(OUT_DIR, "").count(os.sep)
         indent = " " * 4 * level
         print(f"{indent}{os.path.basename(root)}/")

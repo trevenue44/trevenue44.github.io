@@ -1,0 +1,31 @@
+.post-a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.post-container {
+    border-top: 0.5px solid grey;
+    padding: 10px 10px;
+    margin-bottom: 5px;
+}
+
+.post-container:hover {
+    background-color: #f0f0f0;
+}
+
+.post-container .post-date {
+    font-size: 0.8em;
+    color: maroon;
+}
+
+.post-container .post-title {
+    margin: 5px 0;
+    color: black;
+    font-size: x-large;
+}
+
+.post-container .post-excerpt {
+    color: #2B2024;
+    font-size: 1em;
+    font-family: "Inter", sans-serif;
+}
