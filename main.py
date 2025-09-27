@@ -28,7 +28,7 @@ def load_post(filepath: str) -> Post:
         return f"posts/{date_str}/{filename}"
 
     def generate_date_string(date: datetime | None) -> str:
-        FORMAT = "%b %d, %Y %I.%M %p"
+        FORMAT = "%d %B, %Y %I.%M %p"
         if date is None:
             return datetime.now().strftime(FORMAT)
         try:
@@ -103,9 +103,9 @@ def main():
     print("contents for ./public:")
     for root, _dirs, files in os.walk(OUT_DIR):
         level = root.replace(OUT_DIR, "").count(os.sep)
-        indent = " " * 4 * level
+        indent = " " * 2 * level
         print(f"{indent}{os.path.basename(root)}/")
-        subindent = " " * 4 * (level + 1)
+        subindent = " " * 2 * (level + 1)
         for f in files:
             print(f"{subindent}{f}")
 
